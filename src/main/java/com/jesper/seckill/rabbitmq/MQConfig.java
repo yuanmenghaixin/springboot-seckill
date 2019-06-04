@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Created by jiangyunxiong on 2018/5/29.
+ * Created by Tim on 2018/5/29.
  * <p>
  * 配置bean
  */

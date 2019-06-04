@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by jiangyunxiong on 2018/5/22.
+ * Created by Tim on 2018/5/22.
  */
 @Controller
 @RequestMapping("/seckill")

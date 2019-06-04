@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 /**
- * Created by jiangyunxiong on 2018/5/21.
+ * Created by Tim on 2018/5/21.
  */
 @Mapper
 public interface UserMapper {

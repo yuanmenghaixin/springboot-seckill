@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Created by jiangyunxiong on 2018/5/22.
+ * Created by Tim on 2018/5/22.
  */
 @Controller
 @RequestMapping("/goods")
