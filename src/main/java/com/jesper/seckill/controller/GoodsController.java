@@ -10,14 +10,14 @@ import com.jesper.seckill.service.UserService;
 import com.jesper.seckill.vo.GoodsDetailVo;
 import com.jesper.seckill.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.spring4.context.SpringWebContext;
-import org.springframework.context.ApplicationContext;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,8 +64,7 @@ public class GoodsController {
         model.addAttribute("goodsList", goodsList);
 
         //手动渲染
-        SpringWebContext ctx = new SpringWebContext(request, response,
-                request.getServletContext(), request.getLocale(), model.asMap(), applicationContext);
+        WebContext ctx = new WebContext (request, response, request.getServletContext(), request.getLocale(), model.asMap());
         html = thymeleafViewResolver.getTemplateEngine().process("goods_list", ctx);
 
         if (!StringUtils.isEmpty(html)) {
@@ -115,8 +114,7 @@ public class GoodsController {
         model.addAttribute("remainSeconds", remainSeconds);
 
         //手动渲染
-        SpringWebContext ctx = new SpringWebContext(request, response,
-                request.getServletContext(), request.getLocale(), model.asMap(), applicationContext);
+        WebContext ctx = new WebContext(request, response, request.getServletContext(), request.getLocale(), model.asMap());
         html = thymeleafViewResolver.getTemplateEngine().process("goods_detail", ctx);
         if (!StringUtils.isEmpty(html)) {
             redisService.set(GoodsKey.getGoodsDetail, "" + goodsId, html);

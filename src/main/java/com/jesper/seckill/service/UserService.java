@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UserService {
 
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @Autowired
     RedisService redisService;
@@ -51,7 +51,7 @@ public class UserService {
     public boolean updatePassword(String token, long id, String formPass) {
         //取user
         User user = getById(id);
-        if(user == null) {
+        if (user == null) {
             throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
         }
         //更新数据库
@@ -60,7 +60,7 @@ public class UserService {
         toBeUpdate.setPassword(MD5Util.formPassToDBPass(formPass, user.getSalt()));
         userMapper.update(toBeUpdate);
         //更新缓存：先删除再插入
-        redisService.delete(UserKey.getById, ""+id);
+        redisService.delete(UserKey.getById, "" + id);
         user.setPassword(toBeUpdate.getPassword());
         redisService.set(UserKey.token, token, user);
         return true;
@@ -81,6 +81,7 @@ public class UserService {
         String dbPass = user.getPassword();
         String saltDB = user.getSalt();
         String calcPass = MD5Util.formPassToDBPass(formPass, saltDB);
+        System.out.println("加密后：" + calcPass + "加密前：" + formPass);
         if (!calcPass.equals(dbPass)) {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
