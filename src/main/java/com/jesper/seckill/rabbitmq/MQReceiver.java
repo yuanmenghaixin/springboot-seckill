@@ -34,22 +34,22 @@ public class MQReceiver {
     @Autowired
     SeckillService seckillService;
 
-    @RabbitListener(queues=MQConfig.QUEUE)
-    public void receive(String message){
-        log.info("receive message:"+message);
+    @RabbitListener(queues = MQConfig.QUEUE)
+    public void receive(String message) {
+        log.info("receive message:" + message);
         SeckillMessage m = RedisService.stringToBean(message, SeckillMessage.class);
         User user = m.getUser();
         long goodsId = m.getGoodsId();
 
         GoodsVo goodsVo = goodsService.getGoodsVoByGoodsId(goodsId);
         int stock = goodsVo.getStockCount();
-        if(stock <= 0){
+        if (stock <= 0) {
             return;
         }
 
         //判断重复秒杀
         SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
-        if(order != null) {
+        if (order != null) {
             return;
         }
 

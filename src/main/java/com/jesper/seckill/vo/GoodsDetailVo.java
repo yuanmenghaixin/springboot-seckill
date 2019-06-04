@@ -8,7 +8,7 @@ import com.jesper.seckill.bean.User;
 public class GoodsDetailVo {
     private int seckillStatus = 0;
     private int remainSeconds = 0;
-    private GoodsVo goods ;
+    private GoodsVo goods;
     private User user;
 
     public int getSeckillStatus() {

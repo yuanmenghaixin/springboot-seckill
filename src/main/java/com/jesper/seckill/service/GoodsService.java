@@ -59,8 +59,7 @@ public class GoodsService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (ret != 0)
-                break;
+            if (ret != 0) break;
         } while (numAttempts < DEFAULT_MAX_RETRIES);
 
         return ret > 0;

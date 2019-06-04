@@ -12,9 +12,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(
-        validatedBy = {IsMobileValidator.class}
-)//引进校验器
+@Constraint(validatedBy = {IsMobileValidator.class})//引进校验器
 public @interface IsMobile {
 
     boolean required() default true;//默认不能为空

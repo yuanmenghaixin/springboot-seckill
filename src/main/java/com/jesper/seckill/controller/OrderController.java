@@ -38,13 +38,12 @@ public class OrderController {
 
     @RequestMapping("/detail")
     @ResponseBody
-    public Result<OrderDetailVo> info(Model model, User user,
-                                      @RequestParam("orderId") long orderId) {
-        if(user == null) {
+    public Result<OrderDetailVo> info(Model model, User user, @RequestParam("orderId") long orderId) {
+        if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
         OrderInfo order = orderService.getOrderById(orderId);
-        if(order == null) {
+        if (order == null) {
             return Result.error(CodeMsg.ORDER_NOT_EXIST);
         }
         long goodsId = order.getGoodsId();
