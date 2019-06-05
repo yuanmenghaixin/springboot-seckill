@@ -98,7 +98,7 @@ public class UserService {
     public void addCookie(HttpServletResponse response, String token, User user) {
         redisService.set(UserKey.token, token, user);
         Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
-        cookie.setMaxAge(UserKey.token.expireSeconds());
+        cookie.setMaxAge(UserKey.token.expireSeconds());//设置Cookie过期时间属性，MaxAge只被浏览器用来判断Cookie是否过期。
         cookie.setPath("/");//设置为网站根目录
         response.addCookie(cookie);
     }

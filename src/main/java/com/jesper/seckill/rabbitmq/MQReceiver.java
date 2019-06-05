@@ -36,34 +36,31 @@ public class MQReceiver {
 
     @RabbitListener(queues = MQConfig.QUEUE)
     public void receive(String message) {
-        log.info("receive message:" + message);
+        log.info("接收--receive() message:" + message);
         SeckillMessage m = RedisService.stringToBean(message, SeckillMessage.class);
         User user = m.getUser();
         long goodsId = m.getGoodsId();
-
         GoodsVo goodsVo = goodsService.getGoodsVoByGoodsId(goodsId);
         int stock = goodsVo.getStockCount();
         if (stock <= 0) {
             return;
         }
-
         //判断重复秒杀
         SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
         if (order != null) {
             return;
         }
-
         //减库存 下订单 写入秒杀订单
-        seckillService.seckill(user, goodsVo);
+        seckillService.seckillHandle(user, goodsVo);
     }
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE1)
     public void receiveTopic1(String message) {
-        log.info(" topic  queue1 message:" + message);
+        log.info("接收--receiveTopic1() topic  queue1 message:" + message);
     }
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE2)
     public void receiveTopic2(String message) {
-        log.info(" topic  queue2 message:" + message);
+        log.info("接收--receiveTopic2() topic  queue2 message:" + message);
     }
 }

@@ -5,7 +5,7 @@ package com.jesper.seckill.redis;
  */
 public class UserKey extends BasePrefix {
 
-    public static final int TOKEN_EXPIRE = 3600 * 24 * 2;//默认两天
+    public static final int TOKEN_EXPIRE = 3600 * 24 * 2;//默认两天172800
 
     /**
      * 防止被外面实例化

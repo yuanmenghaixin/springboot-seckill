@@ -13,6 +13,8 @@ import com.jesper.seckill.service.GoodsService;
 import com.jesper.seckill.service.OrderService;
 import com.jesper.seckill.service.SeckillService;
 import com.jesper.seckill.vo.GoodsVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @RequestMapping("/seckill")
 public class SeckillController implements InitializingBean {
+    private static Logger log = LoggerFactory.getLogger(SeckillController.class);
 
     @Autowired
     GoodsService goodsService;
@@ -69,41 +72,46 @@ public class SeckillController implements InitializingBean {
     @RequestMapping(value = "/do_seckill", method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> list(Model model, User user, @RequestParam("goodsId") long goodsId) {
+        try {
+            if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS)) {
+                return Result.error(CodeMsg.ACCESS_LIMIT_REACHED);
+            }
 
-        if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS)) {
-            return Result.error(CodeMsg.ACCESS_LIMIT_REACHED);
-        }
-
-        if (user == null) {
-            return Result.error(CodeMsg.SESSION_ERROR);
-        }
-        model.addAttribute("user", user);
-        //内存标记，减少redis访问
-        boolean over = localOverMap.get(goodsId);
-        if (over) {
-            return Result.error(CodeMsg.SECKILL_OVER);
-        }
-        //预减库存
-        long stock = redisService.decr(GoodsKey.getGoodsStock, "" + goodsId);//10
-        if (stock < 0) {
-            afterPropertiesSet();
-            long stock2 = redisService.decr(GoodsKey.getGoodsStock, "" + goodsId);//10
-            if (stock2 < 0) {
-                localOverMap.put(goodsId, true);
+            if (user == null) {
+                return Result.error(CodeMsg.SESSION_ERROR);
+            }
+            model.addAttribute("user", user);
+            //内存标记，减少redis访问
+            boolean over = localOverMap.get(goodsId);
+            if (over) {
                 return Result.error(CodeMsg.SECKILL_OVER);
             }
+            //预减库存
+            long stock = redisService.decr(GoodsKey.getGoodsStock, "" + goodsId);//10
+            if (stock < 0) {
+                afterPropertiesSet();
+                long stock2 = redisService.decr(GoodsKey.getGoodsStock, "" + goodsId);//10
+                if (stock2 < 0) {
+                    localOverMap.put(goodsId, true);
+                    return Result.error(CodeMsg.SECKILL_OVER);
+                }
+            }
+            //判断重复秒杀
+            SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
+            if (order != null) {
+                return Result.error(CodeMsg.REPEATE_SECKILL);
+            }
+            //入队
+            SeckillMessage message = new SeckillMessage();
+            message.setUser(user);
+            message.setGoodsId(goodsId);
+            sender.sendSeckillMessage(message);
+            return Result.success(0);//排队中
+
+        } catch (Exception e) {
+            log.info("抢购失败：" + "失败原因：" + e);
+            return Result.error(CodeMsg.FAIL_ERROR);
         }
-        //判断重复秒杀
-        SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
-        if (order != null) {
-            return Result.error(CodeMsg.REPEATE_SECKILL);
-        }
-        //入队
-        SeckillMessage message = new SeckillMessage();
-        message.setUser(user);
-        message.setGoodsId(goodsId);
-        sender.sendSeckillMessage(message);
-        return Result.success(0);//排队中
     }
 
     /**

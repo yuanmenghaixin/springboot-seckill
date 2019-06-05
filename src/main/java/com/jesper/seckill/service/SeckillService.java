@@ -27,7 +27,7 @@ public class SeckillService {
 
     //保证这三个操作，减库存 下订单 写入秒杀订单是一个事物
     @Transactional
-    public OrderInfo seckill(User user, GoodsVo goods) {
+    public OrderInfo seckillHandle(User user, GoodsVo goods) {
         //减库存
         boolean success = goodsService.reduceStock(goods);
         if (success) {

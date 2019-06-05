@@ -73,12 +73,8 @@
             success:function(data){
                 if(data.code == 0){
                     var result = data.data;
-                    if(result < 0){
+                    if(result <= 0){
                         layer.msg("对不起，秒杀失败");
-                    }else if(result == 0){//继续轮询
-                        setTimeout(function(){
-                            getSeckillResult(goodsId);
-                        }, 50);
                     }else{
                         layer.confirm("恭喜你，秒杀成功！查看订单？", {btn:["确定","取消"]},
                             function(){

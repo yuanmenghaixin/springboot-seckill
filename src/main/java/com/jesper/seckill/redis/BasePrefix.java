@@ -2,6 +2,7 @@ package com.jesper.seckill.redis;
 
 /**
  * Created by Tim on 2018/5/21.
+ * keyPrefix：key前缀
  */
 public abstract class BasePrefix implements KeyPrefix {
 
