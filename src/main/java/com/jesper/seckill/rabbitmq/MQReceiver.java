@@ -37,21 +37,25 @@ public class MQReceiver {
     @RabbitListener(queues = MQConfig.QUEUE)
     public void receive(String message) {
         log.info("接收--receive() message:" + message);
-        SeckillMessage m = RedisService.stringToBean(message, SeckillMessage.class);
-        User user = m.getUser();
-        long goodsId = m.getGoodsId();
-        GoodsVo goodsVo = goodsService.getGoodsVoByGoodsId(goodsId);
-        int stock = goodsVo.getStockCount();
-        if (stock <= 0) {
-            return;
+        try {
+            SeckillMessage m = RedisService.stringToBean(message, SeckillMessage.class);
+            User user = m.getUser();
+            long goodsId = m.getGoodsId();
+            GoodsVo goodsVo = goodsService.getGoodsVoByGoodsId(goodsId);
+            int stock = goodsVo.getStockCount();
+            if (stock <= 0) {
+                return;
+            }
+            //判断重复秒杀
+            SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
+            if (order != null) {
+                return;
+            }
+            //减库存 下订单 写入秒杀订单
+            seckillService.seckillHandle(user, goodsVo);
+        }catch(Exception e){
+            log.info("处理异常"+e);
         }
-        //判断重复秒杀
-        SeckillOrder order = orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);
-        if (order != null) {
-            return;
-        }
-        //减库存 下订单 写入秒杀订单
-        seckillService.seckillHandle(user, goodsVo);
     }
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE1)
