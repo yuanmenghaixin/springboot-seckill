@@ -15,7 +15,7 @@ import java.util.Date;
 @RequestMapping("/rateLimiter")
 public class RateLimiterController {
     //基于令牌桶算法的限流实现类
-    RateLimiter rateLimiter = RateLimiter.create(0.1); //设置为0.1为十秒获取一个令牌
+    RateLimiter rateLimiter = RateLimiter.create(0.001); //设置为0.1为十秒获取一个令牌
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @RequestMapping("/access")
@@ -26,7 +26,8 @@ public class RateLimiterController {
             Date date = new Date();
             //模拟业务执行500毫秒
             try {
-                Thread.sleep(1000 * ((int) (Math.random() * 10) + 1));
+
+                Thread.sleep(300000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

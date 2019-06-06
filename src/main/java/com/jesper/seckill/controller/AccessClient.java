@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Tim on 2019/6/5.
  */
 public class AccessClient {
-    ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+    ExecutorService fixedThreadPool = Executors.newFixedThreadPool(20);
 
     /**
      * get请求
@@ -60,8 +61,8 @@ public class AccessClient {
     public void access() throws Exception {
         final URL url = new URL("http://127.0.0.1:8080/rateLimiter/access");
 
-        for (int j = 0; j < 100; j++) {
-            Thread.sleep(1000);
+        for (int j = 0; j < 300; j++) {
+            Thread.sleep(500);
             int finalJ = j;
             fixedThreadPool.submit(new Runnable() {
                 @Override
@@ -76,7 +77,11 @@ public class AccessClient {
     }
 
     public static void main(String[] args) throws Exception {
+        Date date1= new Date();
         AccessClient accessClient = new AccessClient();
         accessClient.access();
+        Date date2= new Date();
+        long toales=date2.getTime()-date1.getTime();
+        System.out.println("总耗时"+toales);
     }
 }
