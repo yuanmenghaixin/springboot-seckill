@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Tim on 2019/6/5.
  */
-public class AccessClient {
+public class TestAccessClient {
     ExecutorService fixedThreadPool = Executors.newFixedThreadPool(20);
 
     /**
@@ -78,7 +78,7 @@ public class AccessClient {
 
     public static void main(String[] args) throws Exception {
         Date date1= new Date();
-        AccessClient accessClient = new AccessClient();
+        TestAccessClient accessClient = new TestAccessClient();
         accessClient.access();
         Date date2= new Date();
         long toales=date2.getTime()-date1.getTime();

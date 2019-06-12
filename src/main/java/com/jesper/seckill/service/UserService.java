@@ -62,7 +62,7 @@ public class UserService {
         //更新缓存：先删除再插入
         redisService.delete(UserKey.getById, "" + id);
         user.setPassword(toBeUpdate.getPassword());
-        redisService.set(UserKey.token, token, user);
+        redisService.set(UserKey.tokenSession, token, user);
         return true;
     }
 
@@ -96,9 +96,9 @@ public class UserService {
      * 同时将token存入cookie，保存登录状态
      */
     public void addCookie(HttpServletResponse response, String token, User user) {
-        redisService.set(UserKey.token, token, user);
+        redisService.set(UserKey.tokenSession, token, user);
         Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
-        cookie.setMaxAge(UserKey.token.expireSeconds());//设置Cookie过期时间属性，MaxAge只被浏览器用来判断Cookie是否过期。
+        cookie.setMaxAge(UserKey.TOKEN_EXPIRE);//设置Cookie过期时间属性，MaxAge只被浏览器用来判断Cookie是否过期。
         cookie.setPath("/");//设置为网站根目录
         response.addCookie(cookie);
     }
@@ -110,7 +110,7 @@ public class UserService {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-        User user = redisService.get(UserKey.token, token, User.class);
+        User user = redisService.get(UserKey.tokenSession, token, User.class);
         //延长有效期，有效期等于最后一次操作+有效期
         if (user != null) {
             addCookie(response, token, user);
